@@ -15,7 +15,7 @@ class PhysicalProduct extends Product implements Shippable {
         $this->weight = $weight;
     }
 
-
+               
     public function getWeight(): float {
         return $this->weight;
     }

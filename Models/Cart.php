@@ -4,6 +4,7 @@ namespace Models;
 
 use Models\CartItem;
 use Exception;
+use Expirable;
 use Models\Product;
 
 class Cart {
@@ -29,6 +30,14 @@ class Cart {
 
         if ($product->getQuantity() < $qunatity) {
             throw new Exception("No enough stock for this product.");
+        }
+
+        $test = $product instanceof Expirable;
+
+
+
+        if ($product instanceof Expirable and $product->isExpired()) {
+            throw new Exception("one product is out of stock or expired. Product: " . $product->getName());
         }
 
         $this->items[] = new CartItem($product, $qunatity); // check if repeated product

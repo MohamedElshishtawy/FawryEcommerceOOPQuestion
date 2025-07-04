@@ -24,7 +24,7 @@ class Customer {
 
     public function pay(float $price): void {
         if ($price > $this->getBalance()) {
-            throw new Exception("Your balance is smaller than the amount you want to pay.");
+            throw new Exception("Customer's balance is insufficient.");
         }
 
         $this->setBalance($this->getBalance() - $price);

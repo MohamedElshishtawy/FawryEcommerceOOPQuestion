@@ -17,7 +17,7 @@ class CheckoutService {
         
         // Process payment
         $amount = $cart->subTotalPrice() + $cart->shippingFees();
-        $customer->pay($amount); // this will check the balance :)
+        $customer->pay($amount); // will check the customer balance also
 
         // Send shippable products to ShippingService
         $shippingService = self::sendShippingItemsToService($cart);
