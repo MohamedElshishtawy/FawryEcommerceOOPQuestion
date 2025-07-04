@@ -21,13 +21,6 @@ $cart->append($windows11, 1);
 $cart->append($laptop, 1);
 $cart->append($milk, 1);
 
-echo $cart->subTotalPrice();
-echo '<br>';
-echo $cart->shippingFees();
-
-
-echo '<br>';
-
 
 // Checkout and pay
 CheckoutService::checkout($customer, $cart);

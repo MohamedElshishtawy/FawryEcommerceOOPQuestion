@@ -5,7 +5,7 @@ use Exception;
 
 class Customer {
 
-    public float $balance;
+    private float $balance;
 
     public function __construct(float $balance) {
         $this->balance = $balance;
@@ -15,11 +15,20 @@ class Customer {
         return $this->balance;
     }
 
+    public function setBalance(float $balance): void {
+        if ($balance < 0) {
+            throw new Exception("Balance cannot be negative.");
+        }
+        $this->balance = $balance;
+    }
+
     public function pay(float $price): void {
-        if ($price > $this->balance) {
+        if ($price > $this->getBalance()) {
             throw new Exception("Your balance is smaller than the amount you want to pay.");
         }
-        $this->balance -= $price;
+
+        $this->setBalance($this->getBalance() - $price);
+        
     }
 
 }
