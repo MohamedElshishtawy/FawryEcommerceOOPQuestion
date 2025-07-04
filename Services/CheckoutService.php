@@ -3,55 +3,94 @@
 use Models\Cart;
 use Models\Customer;
 use Models\Shippable;
+use Services\ShippingService;
 
 class CheckoutService {
 
 
     public static function checkout(Customer $customer, Cart $cart): void
     {
+
+        self::printShipmentNotice($cart);
+        
+        self::printCheckoutReceipt($cart);
+        
+        // Process payment
+        $amount = $cart->subTotalPrice() + $cart->shippingFees();
+        $customer->pay($amount); // this will check the balance :)
+
+        // Send shippable products to ShippingService
+        $shippingService = self::sendShippingItemsToService($cart);
+        $shippingService->showItems();
+    }
+
+    private static function sendShippingItemsToService(Cart $cart): ShippingService
+    {
+        $items = [];
+
+        foreach ($cart->getItems() as $item) {
+            if ($item->getProduct() instanceof Shippable) {
+                $items[] = new \Models\ShippingItem($item);
+            }
+        }
+
+        return new ShippingService($items);
+
+    }
+
+    private static function printShipmentNotice(Cart $cart): void
+    {
         $items = $cart->getItems();
         $totalWeight = 0.0;
-        $shipmentLines = [];
-        $weightLines = [];
-        $receiptLines = [];
-        $subtotal = 0.0;
-        $shipping = 0.0;
 
-        // Shipment notice
         echo "** Shipment notice **<br>";
+        
         foreach ($items as $item) {
             $product = $item->getProduct();
-            $quantity = $item->getQuantity();
-            $name = $product->getName();
             
             if ($product instanceof Shippable) {
-                $totalWeight += $product->getWeight() * $quantity;
-                echo $quantity . 'x ' . $name . ' | ' . $product->getWeight() . 'gram<br>';
+                $quantity = $item->getQuantity();
+                $name = $product->getName();
+                $weight = $product->getWeight();
+                
+                $totalWeight += $weight * $quantity;
+                echo $quantity . 'x ' . $name . ' | ' . $weight . 'gram<br>';
             }
         }
         
         echo 'Total package weight ' . ($totalWeight/1000) . 'kg<br>';
-
         echo "----------------------<br>";
+    }
 
-        // Checkout receipt
+    private static function printCheckoutReceipt(Cart $cart): void
+    {
+        $items = $cart->getItems();
+        $subtotal = 0.0;
+
         echo "** Checkout receipt **<br>";
+        
         foreach ($items as $item) {
             $product = $item->getProduct();
             $quantity = $item->getQuantity();
             $name = $product->getName();
             $lineTotal = $item->getSubtotal();
+            
             $subtotal += $lineTotal;
             echo $quantity . 'x ' . $name . " | " . $lineTotal . "<br>";
-            
         }
+        
         echo "----------------------<br>";
+        
         $shipping = $cart->shippingFees();
         $amount = $subtotal + $shipping;
+        
         echo "Subtotal: $subtotal<br>Shipping: $shipping<br>Amount: $amount<br>";
 
-        $customer->pay($amount);
+        echo "----------------------<br>";
     }
+
+
+    
 
 
 }

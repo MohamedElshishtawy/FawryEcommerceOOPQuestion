@@ -30,7 +30,7 @@ class CartItem {
     public function getShippingFees()
     {
         if ($this->product instanceof Shippable) {
-            return $this->quantity * FeesCalcsService::calcShippingFees($this->product->getWeight()) ;
+            return $this->getQuantity() * FeesCalcsService::calcShippingFees($this->getProduct()->getWeight()) ;
         }
         return 0.0;
     }

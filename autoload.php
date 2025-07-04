@@ -18,5 +18,7 @@ include_once 'Models/CartItem.php';
 
 include_once 'Services/FeesCalcsService.php';
 include_once 'Services/CheckoutService.php';
+include_once 'Services/ShippingService.php';
+include_once 'Models/ShippingItem.php';
 
 
